@@ -1,0 +1,20 @@
+[
+    {
+        "Name": "Stacy",
+        "Items": [
+            {
+                "Item": "Books",
+                "Purchased": true
+            }
+        ]
+    },
+    {
+        "Name": "Ron",
+        "Items": [
+            {
+                "Item": "Car",
+                "Purchased": false
+            }
+        ]
+    }
+]
