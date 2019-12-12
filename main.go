@@ -1,10 +1,16 @@
 package main
 
+//Change all the functions that reference the methods and functions in wishList.go file to reference the new functions in Model
+
+//copy whole DB and config file to get data base connected use slice flie to get one part connected, one part at a time
+
 import (
 	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/StacyCollyerHowell/WishList-Project/storage"
+	"gitlab.com/parallellearning/lessons/lesson-10/02-db-applied/code-activities/03-arcades-db/solved/db"
 
 	"github.com/StacyCollyerHowell/WishList-Project/wishlistapi"
 	"github.com/manifoldco/promptui"
@@ -17,12 +23,17 @@ const (
 	// viewItems  = "Show Item List"
 )
 
+var wishListService *wishlistapi.wishListService
+
 func main() {
 
-	err := storage.Load()
+	db, err := db.ConnectDatabase("wishList_db.config")
 	if err != nil {
-		fmt.Println("Error Loading WishLists from file", err)
+		fmt.Println("Error:", err.Error())
+		os.Exit(1)
 	}
+
+	wishListService = wishlistapi.NewService(db)
 
 	for {
 		fmt.Println()

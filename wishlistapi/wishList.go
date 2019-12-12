@@ -13,11 +13,14 @@ type WishList struct {
 }
 
 type Person struct {
-	Name  string
-	Items []*Item
+	ID     int
+	Name   string
+	ItemID int
+	//Items  []*Item
 }
 
 type Item struct {
+	ID        int
 	Item      string
 	Purchased bool
 }
@@ -36,7 +39,7 @@ func ListWishlists() []*Person {
 
 func (plist *Person) AddItemToPerson(it *Item) {
 	plist.Items = append(plist.Items, it)
-}
+} //not there but used
 
 func (y *Person) ShowItemList() []*Item {
 
@@ -45,7 +48,7 @@ func (y *Person) ShowItemList() []*Item {
 
 func (list *WishList) AddPersonToList(p *Person) {
 	list.People = append(list.People, p)
-}
+} //not there; not used
 
 // func (wlist *wishLists) AddPersonToWishList(p *Person) {
 // 	wlist.Person = append(wlist.Person, p)
