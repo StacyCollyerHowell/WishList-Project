@@ -249,9 +249,11 @@ func viewItems(chosenPerson *wishlistapi.Person) error {
 		return err
 	}
 
-	//implemnt viewItems function similar to view person
-
 	promptForBool(chosenItem.Item)
+
+	chosenItem.Purchased = !chosenItem.Purchased
+
+	wishListService.UpdateItem(chosenItem.ID, chosenItem.Purchased)
 
 	return nil
 }

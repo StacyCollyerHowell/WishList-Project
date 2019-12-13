@@ -15,6 +15,8 @@ func NewService(db *sql.DB) *WishListService {
 const (
 	insertPersonQuery = "INSERT INTO person (person_name) VALUES (?);"
 
+	updateItemQuery = "UPDATE items SET purchased = ? where id = ?"
+
 	selectPersonQuery = "SELECT id, person_name FROM person"
 
 	selectItemQuery = "SELECT id, item_name, purchased FROM items WHERE person_id = ?"
@@ -83,6 +85,15 @@ func (a *WishListService) ShowItemList(PersonID int) ([]*Item, error) {
 
 func (a *WishListService) AddItemsToPerson(itemName string, purchased bool, personID int) error {
 	_, err := a.db.Exec(insertItemQuery, itemName, purchased, personID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *WishListService) UpdateItem(itemID int, purchased bool) error {
+	_, err := a.db.Exec(updateItemQuery, purchased, itemID)
 	if err != nil {
 		return err
 	}
