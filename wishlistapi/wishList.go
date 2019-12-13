@@ -13,16 +13,16 @@ type WishList struct {
 }
 
 type Person struct {
-	ID     int
-	Name   string
-	ItemID int
-	//Items  []*Item
+	ID    int
+	Name  string
+	Items []*Item
 }
 
 type Item struct {
 	ID        int
 	Item      string
 	Purchased bool
+	PersonID  int
 }
 
 func SetWishList(w []*Person) {

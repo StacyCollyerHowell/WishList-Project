@@ -13,17 +13,17 @@ func NewService(db *sql.DB) *WishListService {
 }
 
 const (
-	insertPersonQuery = "INSERT INTO person (id, person_name) VALUES (?, ?);"
+	insertPersonQuery = "INSERT INTO person (person_name) VALUES (?);"
 
-	selectPersonQuery = "SELECT id, person_name, FROM person"
+	selectPersonQuery = "SELECT id, person_name FROM person"
 
 	selectItemQuery = "SELECT id, item_name, purchased FROM items WHERE person_id = ?"
 
-	insertItemQuery = "INSERT INTO items (id, item_name, purchased, person_id) VALUES (?, ?, ?,?)"
+	insertItemQuery = "INSERT INTO items (item_name, purchased, person_id) VALUES (?, ?, ?)"
 )
 
-func (a *WishListService) AddWishlist(personName string) error {
-	_, err := a.db.Exec(insertPersonQuery, Person.Name)
+func (a *WishListService) AddPerson(personName string) error {
+	_, err := a.db.Exec(insertPersonQuery, personName)
 	if err != nil {
 		return err
 	}
@@ -31,38 +31,37 @@ func (a *WishListService) AddWishlist(personName string) error {
 	return nil
 }
 
-func (a *WishListService) ListWishlists() ([]Person, error) {
+func (a *WishListService) ListPeople() ([]*Person, error) {
 	rows, err := a.db.Query(selectPersonQuery)
 	if err != nil {
 		return nil, err
 	}
 
-	var people []Person
+	var people []*Person
 	for rows.Next() {
 		var person Person
 
 		err := rows.Scan(
 			&person.ID,
 			&person.Name,
-			&person.ItemID,
 		)
 		if err != nil {
 			return nil, err
 		}
 
-		people = append(people, person)
+		people = append(people, &person)
 	}
 
 	return people, nil
 }
 
-func (a *WishListService) ShowItemList(PersonID int) ([]Items, error) {
-	rows, err := a.db.Query(selectItemQuery, ItemID)
+func (a *WishListService) ShowItemList(PersonID int) ([]*Item, error) {
+	rows, err := a.db.Query(selectItemQuery, PersonID)
 	if err != nil {
 		return nil, err
 	}
 
-	var items []Item
+	var items []*Item
 	for rows.Next() {
 		var item Item
 
@@ -70,19 +69,20 @@ func (a *WishListService) ShowItemList(PersonID int) ([]Items, error) {
 			&item.ID,
 			&item.Item,
 			&item.Purchased,
+			//&item.PersonID,
 		)
 		if err != nil {
 			return nil, err
 		}
 
-		items = append(items, item)
+		items = append(items, &item)
 	}
 
 	return items, nil
 }
 
-func (a *WishListService) AddItemsToPerson(itemID int, personID int) error {
-	_, err := a.db.Exec(insertItemQuery, itemID, personID)
+func (a *WishListService) AddItemsToPerson(itemName string, purchased bool, personID int) error {
+	_, err := a.db.Exec(insertItemQuery, itemName, purchased, personID)
 	if err != nil {
 		return err
 	}

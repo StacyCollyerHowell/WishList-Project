@@ -9,8 +9,9 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/StacyCollyerHowell/WishList-Project/db"
 	"github.com/StacyCollyerHowell/WishList-Project/storage"
-	"gitlab.com/parallellearning/lessons/lesson-10/02-db-applied/code-activities/03-arcades-db/solved/db"
+	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/StacyCollyerHowell/WishList-Project/wishlistapi"
 	"github.com/manifoldco/promptui"
@@ -23,11 +24,11 @@ const (
 	// viewItems  = "Show Item List"
 )
 
-var wishListService *wishlistapi.wishListService
+var wishListService *wishlistapi.WishListService
 
 func main() {
 
-	db, err := db.ConnectDatabase("wishList_db.config")
+	db, err := db.ConnectDatabase("wishlist_db.config")
 	if err != nil {
 		fmt.Println("Error:", err.Error())
 		os.Exit(1)
@@ -92,7 +93,7 @@ func addPersonPrompt() error {
 			Name: name,
 		}
 
-		wishlistapi.AddWishlist(newPerson)
+		wishListService.AddPerson(newPerson.Name)
 
 		fmt.Println("Added Name", newPerson)
 
@@ -173,7 +174,10 @@ func promptForBool(label string) (bool, error) {
 
 func ViewPerson() error {
 
-	availablePeople := wishlistapi.ListWishlists()
+	availablePeople, err := wishListService.ListPeople()
+	if err != nil {
+		return err
+	}
 
 	if len(availablePeople) == 0 {
 		fmt.Println("No names to select!")
@@ -197,15 +201,7 @@ func ViewPerson() error {
 
 	chosenPerson := availablePeople[chosenIndex]
 
-	//chosenPerson.viewItems(chosenPerson)
-
-	//ViewItems(chosenPerson)
-
 	viewItems(chosenPerson)
-
-	// if err != nil {
-	// 	return err
-	// }
 
 	if err != nil {
 		return err
@@ -216,8 +212,11 @@ func ViewPerson() error {
 
 func viewItems(chosenPerson *wishlistapi.Person) error {
 
-	availableItems := chosenPerson.ShowItemList()
+	availableItems, err := wishListService.ShowItemList(chosenPerson.ID)
 
+	if err != nil {
+		return err
+	}
 	if len(availableItems) == 0 {
 		fmt.Println("No items to select!")
 		return nil
@@ -227,9 +226,13 @@ func viewItems(chosenPerson *wishlistapi.Person) error {
 
 	var options []string
 	for _, personList := range availableItems {
-		options = append(options, personList.Item)
-	}
+		if personList.Purchased == true {
+			options = append(options, personList.Item+" ✓")
+		} else {
+			options = append(options, personList.Item+" ☐")
 
+		}
+	}
 	selectItemPrompt := promptui.Select{
 		Label: "Select item",
 		Items: options,
